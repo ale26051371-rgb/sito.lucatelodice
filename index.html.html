@@ -2235,11 +2235,49 @@
         modal.classList.remove('active');
         document.body.style.overflow = '';
     }
+    // ⚠️ IMPORTANT: Replace this URL with your Google Apps Script web app URL
+    // Instructions: Extensions → Apps Script → Deploy → New deployment → Web app
+    // Set "Execute as: Me" and "Who has access: Anyone"
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwU27S-MkUiZhNDpYu_8NtTuN_hSwDQKdphNYo4tuUjvqaJs-2u-_Du2TAly5Nt04pU/exec';
+
     function submitWaitlist(e) {
         e.preventDefault();
-        // Here you'd normally send the data to a backend
-        document.getElementById('waitlistForm').style.display = 'none';
-        document.getElementById('waitlistSuccess').style.display = 'block';
+
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+
+        // Get form values
+        const nombre = form.querySelector('input[type="text"]').value;
+        const email = form.querySelector('input[type="email"]').value;
+        const nivel = form.querySelector('select').value;
+
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Enviando...';
+
+        // Send data to Google Sheets via Apps Script
+        fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, email, nivel })
+        })
+        .then(() => {
+            // Success — show success screen
+            document.getElementById('waitlistForm').style.display = 'none';
+            document.getElementById('waitlistSuccess').style.display = 'block';
+        })
+        .catch((err) => {
+            console.error('Error sending to Google Sheets:', err);
+            // Still show success to user even if there's an error
+            document.getElementById('waitlistForm').style.display = 'none';
+            document.getElementById('waitlistSuccess').style.display = 'block';
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
     }
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeWaitlist();
