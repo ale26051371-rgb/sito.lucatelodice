@@ -1413,7 +1413,7 @@
                     </ul>
 
                     <div class="service-cta">
-                        <button class="btn btn-gold btn-lg" onclick="openWaitlist()">
+                        <button class="btn btn-gold btn-lg" onclick="openGroupCourse()">
                             Apúntate a la lista
                             <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
                         </button>
@@ -1941,68 +1941,8 @@
         </div>
     </footer>
 
-    <!-- WAITLIST MODAL -->
-    <div class="modal-overlay" id="waitlistModal" onclick="if(event.target===this)closeWaitlist()">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeWaitlist()" aria-label="Cerrar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-
-            <div id="waitlistForm">
-                <div class="modal-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
-                <div class="modal-eyebrow">Lista de espera</div>
-                <h3 class="modal-title">Las clases en grupo están <span class="italic">completas</span></h3>
-                <p class="modal-text">¡Buenas noticias y malas noticias! Las plazas para los grupos actuales están llenas — pero abriremos nuevos grupos pronto. Apúntate a la lista y serás de los primeros en saber cuándo y a qué horario.</p>
-
-                <form class="modal-form" onsubmit="submitWaitlist(event)">
-                    <input type="text" class="modal-input" placeholder="Tu nombre" required>
-                    <input type="email" class="modal-input" placeholder="Tu email" required>
-                    <input type="tel" class="modal-input" placeholder="Tu teléfono (con prefijo, ej. +34...)" required>
-                    <select class="modal-select" required>
-                        <option value="">Tu nivel actual de italiano</option>
-                        <option value="A1">Principiante (A1)</option>
-                        <option value="A2">Básico (A2)</option>
-                        <option value="B1">Intermedio (B1)</option>
-                        <option value="B2">Intermedio alto (B2)</option>
-                        <option value="C1">Avanzado (C1+)</option>
-                        <option value="none">No lo sé aún</option>
-                    </select>
-                    <button type="submit" class="btn btn-gold btn-lg">
-                        Apuntarme a la lista
-                        <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-                    </button>
-                </form>
-
-                <div class="modal-divider">o mientras tanto</div>
-
-                <div class="modal-alt-cta">
-                    <p class="modal-alt-text">¿No quieres esperar? Las <strong>clases privadas</strong> tienen plazas disponibles y empiezas <strong>esta misma semana</strong>.</p>
-                    <button class="btn btn-outline" onclick="closeWaitlist(); setTimeout(()=>scrollToTeachers(),300);" style="width:100%;">
-                        Ver clases privadas
-                    </button>
-                </div>
-            </div>
-
-            <div id="waitlistSuccess" style="display:none;">
-                <div class="modal-success">
-                    <div class="modal-success-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    </div>
-                    <h3>¡Listo, estás en la lista!</h3>
-                    <p>Te escribiremos en cuanto abramos las nuevas plazas en grupo. Mientras tanto, sigue a Luca en Instagram para tips diarios.</p>
-                    <div style="margin-top:1.5rem; display:flex; gap:0.75rem; flex-wrap:wrap; justify-content:center;">
-                        <a href="https://www.instagram.com/lucatelodice/" target="_blank" class="btn btn-instagram">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="18" cy="6" r="1" fill="currentColor"/></svg>
-                            Seguir a Luca
-                        </a>
-                        <button class="btn btn-outline" onclick="closeWaitlist()">Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- (Il vecchio modale waitlist con form Google Sheet è stato rimosso.
+         I corsi di gruppo ora usano il popup Tally 5BOaEQ via openGroupCourse().) -->
 
     <script>
     // DATA
@@ -2301,92 +2241,50 @@
     // ═══════════════════════════════════════════════════
     // TALLY FORM POPUP — sostituisce flusso prenotazione
     // ═══════════════════════════════════════════════════
-    // ⚠️ ISTRUZIONI: Quando hai il link Tally (es. https://tally.so/r/abc123),
-    //    sostituisci 'TU_TALLY_FORM_ID' qui sotto con il tuo ID (es. 'abc123').
-    //    NIENT'ALTRO da modificare: tutti i CTA del sito apriranno questo form.
-    const TALLY_FORM_ID = '1AK1AM';
+    // ⚠️ ISTRUZIONI: Per cambiare i form, sostituisci gli ID qui sotto con quelli
+    //    presi dal link Tally (es. https://tally.so/r/abc123  →  ID = 'abc123').
+    //    Tutti i CTA "clases privadas" aprono TALLY_FORM_ID.
+    //    Il CTA "clases en grupo" apre GROUP_TALLY_FORM_ID.
+    const TALLY_FORM_ID = '1AK1AM';        // Lezioni private
+    const GROUP_TALLY_FORM_ID = '5BOaEQ';  // Corsi di gruppo  (https://tally.so/r/5BOaEQ)
+
+    // Opzioni condivise del popup Tally (stesso comportamento per entrambi i form).
+    // autoClose alto = il popup resta aperto dopo l'invio così l'utente vede
+    // la pagina di ringraziamento configurata dentro Tally.
+    const TALLY_POPUP_OPTIONS = {
+        layout: 'modal',
+        width: 700,
+        overlay: true,
+        emoji: { text: '👋', animation: 'wave' },
+        autoClose: 600000,
+        hideTitle: false
+    };
 
     function openBooking() {
-        if (typeof Tally === 'undefined' || TALLY_FORM_ID === 'TU_TALLY_FORM_ID') {
-            // Fallback: se Tally non è ancora configurato, scroll alla sezione team
+        if (typeof Tally === 'undefined') {
+            // Fallback: se Tally non è ancora caricato, scroll alla sezione team
             const teamSection = document.getElementById('teachers');
             if (teamSection) teamSection.scrollIntoView({ behavior: 'smooth' });
-            console.warn('⚠️ Tally form non configurato. Sostituisci TU_TALLY_FORM_ID con il tuo ID nel codice.');
+            console.warn('⚠️ Tally non disponibile (clases privadas).');
             return;
         }
-        Tally.openPopup(TALLY_FORM_ID, {
-            layout: 'modal',
-            width: 700,
-            overlay: true,
-            emoji: { text: '👋', animation: 'wave' },
-            autoClose: 600000,
-            hideTitle: false
-        });
+        Tally.openPopup(TALLY_FORM_ID, TALLY_POPUP_OPTIONS);
     }
 
-    // Alias per retrocompatibilità (vecchi onclick chiamano ancora scrollToTeachers)
+    function openGroupCourse() {
+        if (typeof Tally === 'undefined') {
+            // Fallback: se Tally non è ancora caricato, scroll alla sezione corsi
+            const groupSection = document.getElementById('services') || document.getElementById('teachers');
+            if (groupSection) groupSection.scrollIntoView({ behavior: 'smooth' });
+            console.warn('⚠️ Tally non disponibile (clases en grupo).');
+            return;
+        }
+        Tally.openPopup(GROUP_TALLY_FORM_ID, TALLY_POPUP_OPTIONS);
+    }
+
+    // Alias per retrocompatibilità (vecchi onclick chiamano ancora scrollToTeachers/openWaitlist)
     function scrollToTeachers() { openBooking(); }
-
-    // WAITLIST MODAL
-    function openWaitlist() {
-        const modal = document.getElementById('waitlistModal');
-        document.getElementById('waitlistForm').style.display = 'block';
-        document.getElementById('waitlistSuccess').style.display = 'none';
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    function closeWaitlist() {
-        const modal = document.getElementById('waitlistModal');
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-    // ⚠️ IMPORTANT: Replace this URL with your Google Apps Script web app URL
-    // Instructions: Extensions → Apps Script → Deploy → New deployment → Web app
-    // Set "Execute as: Me" and "Who has access: Anyone"
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwU27S-MkUiZhNDpYu_8NtTuN_hSwDQKdphNYo4tuUjvqaJs-2u-_Du2TAly5Nt04pU/exec';
-
-    function submitWaitlist(e) {
-        e.preventDefault();
-
-        const form = e.target;
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-
-        // Get form values
-        const nombre = form.querySelector('input[type="text"]').value;
-        const email = form.querySelector('input[type="email"]').value;
-        const nivel = form.querySelector('select').value;
-
-        // Show loading state
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Enviando...';
-
-        // Send data to Google Sheets via Apps Script
-        fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, email, nivel })
-        })
-        .then(() => {
-            // Success — show success screen
-            document.getElementById('waitlistForm').style.display = 'none';
-            document.getElementById('waitlistSuccess').style.display = 'block';
-        })
-        .catch((err) => {
-            console.error('Error sending to Google Sheets:', err);
-            // Still show success to user even if there's an error
-            document.getElementById('waitlistForm').style.display = 'none';
-            document.getElementById('waitlistSuccess').style.display = 'block';
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-        });
-    }
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeWaitlist();
-    });
+    function openWaitlist() { openGroupCourse(); }
     function toggleFaq(btn) {
         const item = btn.parentElement;
         const wasActive = item.classList.contains('active');
